@@ -1,23 +1,21 @@
-from step2_prepare_dataset import load_dataset
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.data import Dataset, DataLoader
-from torch.optim import AdamW
-from torch.optim.lr_scheduler import CosineAnnealingLR, CosineAnnealingWarmRestarts
 import torch.nn.init as init
-from typing import List, Tuple, Optional
-import cv2
-from mpl_toolkits.mplot3d import Axes3D
 import random
 import math
-from tqdm import tqdm
 import time
 import json
+
 from datetime import datetime
+from torch.utils.data import Dataset, DataLoader
+from torch.optim import AdamW
+from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
+from tqdm import tqdm
+
+from step2_prepare_dataset import load_dataset
 
 TEST_MODE = False
 

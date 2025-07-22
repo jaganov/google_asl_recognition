@@ -1,0 +1,212 @@
+{
+  "model_info": {
+    "name": "asl_model_v20250722_160024",
+    "timestamp": "20250722_160024",
+    "architecture": "Enhanced_TCN_LSTM_Transformer_v2",
+    "version": "adaptive_regularization_v2",
+    "description": "ASL Recognition model with adaptive regularization and improved architecture"
+  },
+  "model_parameters": {
+    "total_params": 1968601,
+    "trainable_params": 1968601,
+    "input_dim": 744,
+    "hidden_dim": 192,
+    "num_classes": 25,
+    "max_sequence_length": 384
+  },
+  "training_config": {
+    "epochs": 300,
+    "batch_size": 32,
+    "learning_rate": 0.0004,
+    "optimizer": "AdamW",
+    "weight_decay": 0.005,
+    "loss_function": "CrossEntropyLoss",
+    "label_smoothing": 0.05,
+    "scheduler": "CosineAnnealingWarmRestarts",
+    "warmup_epochs": 10,
+    "scheduler_params": {
+      "T_0": 50,
+      "T_mult": 2,
+      "eta_min": "lr*0.01"
+    }
+  },
+  "architecture_details": {
+    "preprocessing": {
+      "type": "PreprocessingLayer",
+      "max_len": 384,
+      "motion_features": [
+        "velocity",
+        "acceleration",
+        "relative_motion",
+        "temporal_consistency",
+        "motion_magnitude",
+        "motion_direction"
+      ]
+    },
+    "stem": {
+      "type": "Linear + BatchNorm + AdaptiveDropout",
+      "dropout_range": [
+        0.1,
+        0.3
+      ],
+      "warmup_epochs": 20
+    },
+    "tcn_blocks": {
+      "count": 3,
+      "kernel_size": 17,
+      "dilations": [
+        1,
+        2,
+        4
+      ],
+      "dropout_rates": [
+        0.15,
+        0.2,
+        0.25
+      ]
+    },
+    "lstm": {
+      "type": "BidirectionalLSTM",
+      "layers": 2,
+      "hidden_dim": "dim//2",
+      "dropout": 0.15
+    },
+    "attention": {
+      "type": "TemporalAttention",
+      "heads": 8,
+      "dropout": 0.15
+    },
+    "conv_blocks": {
+      "count": 3,
+      "kernel_size": 17,
+      "dropout_rates": [
+        0.15,
+        0.2,
+        0.25
+      ]
+    },
+    "transformer": {
+      "blocks": 1,
+      "heads": 8,
+      "expand": 2,
+      "dropout": 0.15
+    },
+    "pooling": {
+      "types": [
+        "global_avg",
+        "global_max",
+        "attention"
+      ],
+      "attention_heads": 4,
+      "dropout": 0.1
+    },
+    "classifier": {
+      "type": "Sequential",
+      "layers": [
+        "Linear(dim*3, dim)",
+        "BatchNorm1d",
+        "SiLU",
+        "Dropout(0.3)",
+        "Linear(dim, num_classes)"
+      ]
+    },
+    "adaptive_dropout": {
+      "type": "AdaptiveDropout",
+      "initial_p": 0.2,
+      "final_p": 0.5,
+      "warmup_epochs": 25
+    }
+  },
+  "augmentation": {
+    "temporal_resample": {
+      "probability": 0.6,
+      "scale_range": [
+        0.8,
+        1.2
+      ]
+    },
+    "random_masking": {
+      "probability": 0.4,
+      "ratio": 0.05
+    },
+    "random_affine": {
+      "probability": 0.5,
+      "max_scale": 0.02,
+      "max_shift": 0.01,
+      "max_rotate": 2
+    },
+    "temporal_distortion": {
+      "probability": 0.3,
+      "max_shift": 0.1
+    }
+  },
+  "early_stopping": {
+    "patience": 20,
+    "min_epochs": 80
+  },
+  "dataset_info": {
+    "train_samples": 7134,
+    "test_samples": 2376,
+    "num_classes": 25,
+    "classes": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24
+    ]
+  },
+  "hardware": {
+    "device": "cuda:0",
+    "gpu": "NVIDIA GeForce RTX 4070"
+  },
+  "key_improvements_v2": [
+    "Adaptive dropout (0.1→0.6) instead of sharp activation",
+    "TCN: 3 blocks with different dilations (1,2,4)",
+    "LSTM: 2 layers for better dependency capture",
+    "Attention: 8 heads + attention pooling",
+    "Conv: 3 blocks + improved classifier",
+    "CosineAnnealingWarmRestarts scheduler",
+    "Temporal distortion in augmentation",
+    "Reduced weight decay (0.005)",
+    "Improved pooling (avg + max + attention)"
+  ],
+  "expected_improvements": {
+    "val_accuracy_target": "75-78%",
+    "train_val_gap_target": "10-12%",
+    "stability": "More stable training without sharp jumps",
+    "early_stopping": "100-150 epochs instead of 55"
+  },
+  "training_results": {
+    "best_epoch": 47,
+    "best_val_accuracy": 76.05218855218855,
+    "best_train_accuracy": 89.20661620409308,
+    "current_train_loss": 0.6779138491292706,
+    "current_val_loss": 1.1938476610183715,
+    "training_progress": {
+      "epochs_completed": 48,
+      "total_epochs": 300,
+      "patience_counter": 0
+    }
+  }
+}
