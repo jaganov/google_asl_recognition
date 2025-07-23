@@ -2,3 +2,5 @@
 data/google_asl_signs/
 __pycache__
 train_landmark_files
+build/
+dist/
