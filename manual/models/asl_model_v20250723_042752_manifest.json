@@ -1,0 +1,14 @@
+{
+  "training_results": {
+    "best_epoch": 46,
+    "best_val_accuracy": 76.72558922558923,
+    "best_train_accuracy": 89.2206335856462,
+    "current_train_loss": 0.682118225926241,
+    "current_val_loss": 1.1457790422439575,
+    "training_progress": {
+      "epochs_completed": 47,
+      "total_epochs": 300,
+      "patience_counter": 0
+    }
+  }
+}

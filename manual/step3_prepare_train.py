@@ -225,15 +225,6 @@ class Augmentation:
         
         return x
     
-    def horizontal_flip(self, x):
-        """Horizontal flip"""
-        if random.random() > self.p:
-            return x
-        
-        x_flipped = x.clone()
-        x_flipped[..., 0::2] = -x_flipped[..., 0::2]  # x coordinates
-        return x_flipped
-    
     def random_affine(self, x, max_scale=0.02, max_shift=0.01, max_rotate=2):  # Reduce parameters
         """Simplified affine transformations"""
         if random.random() > self.p:
@@ -528,23 +519,6 @@ class TransformerBlock(nn.Module):
         
         return x
 
-class LateDropout(nn.Module):
-    """
-    Dropout that is applied only after a certain step
-    """
-    def __init__(self, p=0.8, start_step=0):
-        super().__init__()
-        self.p = p
-        self.start_step = start_step
-        self.current_step = 0
-    
-    def forward(self, x):
-        if self.current_step >= self.start_step:
-            return F.dropout(x, p=self.p, training=self.training)
-        return x
-    
-    def step(self):
-        self.current_step += 1
 
 class ASLModel(nn.Module):
     """
@@ -1291,26 +1265,26 @@ if __name__ == "__main__":
     print(f"   Final manifest: models/{model_prefix}_final_manifest.json")
     print(f"   Improvement over baseline model: +{best_acc - 65:.2f}%")
     
-    print(f"\n🔬 Key improvements v2:")
-    print(f"   1. Adaptive dropout (0.1→0.6) instead of sharp activation")
-    print(f"   2. TCN: 3 blocks with different dilations (1,2,4)")
-    print(f"   3. LSTM: 2 layers for better dependency capture")
-    print(f"   4. Attention: 8 heads + attention pooling")
-    print(f"   5. Conv: 3 blocks + improved classifier")
-    print(f"   6. CosineAnnealingWarmRestarts scheduler")
-    print(f"   7. Temporal distortion in augmentation")
-    print(f"   8. Reduced weight decay (0.005)")
+    # print(f"\n🔬 Key improvements v2:")
+    # print(f"   1. Adaptive dropout (0.1→0.6) instead of sharp activation")
+    # print(f"   2. TCN: 3 blocks with different dilations (1,2,4)")
+    # print(f"   3. LSTM: 2 layers for better dependency capture")
+    # print(f"   4. Attention: 8 heads + attention pooling")
+    # print(f"   5. Conv: 3 blocks + improved classifier")
+    # print(f"   6. CosineAnnealingWarmRestarts scheduler")
+    # print(f"   7. Temporal distortion in augmentation")
+    # print(f"   8. Reduced weight decay (0.005)")
     
-    print(f"\n💡 Why these changes should help:")
-    print(f"   - Adaptive dropout = smooth regularization activation")
-    print(f"   - More layers = better learning capacity")
-    print(f"   - Attention pooling = better representation of important frames")
-    print(f"   - Warm restarts = escape from local minima")
-    print(f"   - Temporal distortion = better generalization")
+    # print(f"\n💡 Why these changes should help:")
+    # print(f"   - Adaptive dropout = smooth regularization activation")
+    # print(f"   - More layers = better learning capacity")
+    # print(f"   - Attention pooling = better representation of important frames")
+    # print(f"   - Warm restarts = escape from local minima")
+    # print(f"   - Temporal distortion = better generalization")
     
-    print(f"\n📊 Expected results:")
-    print(f"   - Val accuracy: 75-78% (instead of 72.3%)")
-    print(f"   - Smaller gap between train/val (10-12% instead of 17.4%)")
-    print(f"   - More stable training without sharp jumps")
-    print(f"   - Later early stopping (100-150 epochs instead of 55)")
-    print(f"   - Elimination of sharp jump at epoch 30")
+    # print(f"\n📊 Expected results:")
+    # print(f"   - Val accuracy: 75-78% (instead of 72.3%)")
+    # print(f"   - Smaller gap between train/val (10-12% instead of 17.4%)")
+    # print(f"   - More stable training without sharp jumps")
+    # print(f"   - Later early stopping (100-150 epochs instead of 55)")
+    # print(f"   - Elimination of sharp jump at epoch 30")
